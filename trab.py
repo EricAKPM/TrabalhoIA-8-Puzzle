@@ -1,8 +1,5 @@
-from copyreg import constructor
-from math import floor
+import math
 import random
-
-finalizado = False
 
 class ordem:
     def __init__(self, val, dire):
@@ -13,11 +10,10 @@ class ordem:
 
 
 def manhattan(tabela, x, y):
-    global finalizado
-    if finalizado == True:
-        return
     if aleatorio == tabela:
-        finalizado = True
+        return
+
+    print(tabela)
 
     ordenacao = []
     if x - 1 >= 0:
@@ -42,17 +38,18 @@ def manhattan(tabela, x, y):
 
 
 def calcularHeuristicaManhattan():
-    return random.randrange(0, len(aleatorio))
-    """contador = 0
+    contador = 0
     for x in range(0, 3):
         for y in range(0,3):
-            numero = tabela[x][y]
-            posIdealX = abs(numero % 3 - 3*x+y+1)
-            posIdealY = floor(abs((numero / 3)- (x + 1 / 3)))
-            if numero != 9:
-                contador = contador + posIdealX + posIdealY
-            print(str(numero) + ' x='+ str(posIdealX) +" y="+ str(posIdealY) + " = " + str(contador))
-    return contador"""
+            for x1 in range(0,3):
+                for x2 in range(0,3):
+                    if(tabela[x][y]==aleatorio[x1][x2]):
+                        posY = x2
+                        posX = x1
+            posIdealX = abs(y - posY )
+            posIdealY = abs(x - posX)
+            contador = contador + posIdealX + posIdealY
+    return contador
 
 
 tabela = [[0 for i in range(3)] for j in range(3)]
