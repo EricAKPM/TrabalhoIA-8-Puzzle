@@ -8,12 +8,23 @@ class ordem:
     def saida(self):
         print(self.valor, self.direcao)
 
+def checarciclo(atual):
+    print('testando ciclos')
+    for x in ciclo:
+        if(atual == x):
+            return False
+    return True
+
+ciclo=[]
 
 def manhattan(tabela, x, y):
-    if aleatorio == tabela:
+    
+    if aleatorio == tabela and checarciclo(tabela):
         return
 
-    print(tabela)
+    print('TABELA: ', tabela)
+
+    ciclo.append(tabela)
 
     ordenacao = []
     if x - 1 >= 0:
@@ -27,15 +38,27 @@ def manhattan(tabela, x, y):
     ordenacao.sort(key =lambda x : x.valor)
     #for obj in ordenacao:
     if ordenacao[0].direcao == "esquerda":
+        aux=tabela[x][y]
+        tabela[x][y]=tabela[x-1][y]
+        tabela[x-1][y]=aux
         manhattan(tabela, x-1, y)
     elif ordenacao[0].direcao == "direita":
+        aux=tabela[x][y]
+        tabela[x][y]=tabela[x+1][y]
+        tabela[x+1][y]=aux
         manhattan(tabela, x+1, y)
     elif ordenacao[0].direcao == "cima":
+        aux=tabela[x][y]
+        tabela[x][y]=tabela[x][y-1]
+        tabela[x][y-1]=aux
         manhattan(tabela, x, y-1)
     elif ordenacao[0].direcao == "baixo":
+        aux=tabela[x][y]
+        tabela[x][y]=tabela[x][y+1]
+        tabela[x][y+1]=aux
         manhattan(tabela, x, y+1)
 
-
+        
 
 def calcularHeuristicaManhattan():
     contador = 0
