@@ -1,5 +1,6 @@
 import random
 import copy
+#31 movimentos
 
 META = [[1,2,3],[4,5,6],[7,8,9]]
 
@@ -40,7 +41,6 @@ class Noh:
         if coluna + 1 <= 2:
             atual[linha][coluna+1], atual[linha][coluna] = atual[linha][coluna], atual[linha][coluna+1]
         return atual
-
 
 
 class Puzzle:
@@ -94,8 +94,8 @@ class Puzzle:
         tabuleiro = self.criarNo(gerado, None, 0)
         #tabuleiro = self.criarNo([[1,2,8],[5,4,9],[3,6,7]], None, 0)
         if(self.solucionavel(tabuleiro)):
-            #self.AStar(tabuleiro)
-            self.AStarProfundidade(tabuleiro)
+            self.AStar(tabuleiro)
+            #self.AStarProfundidade(tabuleiro)
         else:
             print("Impossivel!!")
     
@@ -103,6 +103,12 @@ class Puzzle:
         print("MOVIMENTOS: " + str(n))
         print(noh.estado)
         print("\n\n")
+
+    def impressaoFinal(self, noh):
+        print("#############################################")
+        while noh != None:
+            print(noh.estado)
+            noh=noh.pai
 
     #LARGURA
     def sucessoresPossiveis(self, noh):
@@ -135,7 +141,7 @@ class Puzzle:
             if x == noh.estado:
                 return aberta 
         aberta.append(noh)
-        aberta.sort(key=lambda x : x.g)
+        aberta.sort(key=lambda x : x.h)
         return aberta
 
     def AStar(self, atual):
@@ -143,17 +149,21 @@ class Puzzle:
         aberta = []
         fechada = []
         aberta.append(atual)
-        while aberta:
+        while aberta and NumeroMovimentos <= 5000:
             noh = aberta[0]
             aberta.pop(0)
             self.imprimir(noh, NumeroMovimentos)
+            """for x in aberta:
+                print('ABERTA::::::::::::::::::')
+                print(x.estado)
+                print(x.h)"""
             if noh.estado == META:
                 print("META atigida com: " + str(NumeroMovimentos) + " movimentos")
                 return
             NumeroMovimentos+=1
             sucessores = self.sucessoresPossiveis(noh)
             for x in sucessores:
-                self.inserirNo(self.criarNo(x, noh, noh.g), aberta, fechada)
+                self.inserirNo(self.criarNo(x, noh, noh.h), aberta, fechada)
             if noh.estado not in fechada:
                 fechada.append(copy.deepcopy(noh.estado))
 
@@ -195,17 +205,22 @@ class Puzzle:
         aberta = []
         fechada = []
         aberta.append(atual)
-        while aberta:
+        while aberta and NumeroMovimentos <= 7000:
             noh = aberta[0]
             aberta.pop(0)
             self.imprimir(noh, NumeroMovimentos)
             if noh.estado == META:
-                print("META atigida com: " + str(NumeroMovimentos) + " movimentos")
+                self.impressaoFinal(noh)
                 return
             NumeroMovimentos+=1
             sucessores = self.sucessoresPossiveisProfundidade(noh)
+            """for x in aberta:
+                print('ABERTA::::::::::::::::::')
+                print(x.estado)
+                print(x.h)"""
+            
             for x in sucessores:
-                self.inserirNoProfundidade(self.criarNo(x, noh, noh.g), aberta, fechada)
+                self.inserirNoProfundidade(self.criarNo(x, noh, noh.h+1), aberta, fechada)
             if noh.estado not in fechada:
                 fechada.append(copy.deepcopy(noh.estado))
 
