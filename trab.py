@@ -1,214 +1,199 @@
+from operator import le
+from threading import local
+import json
 import random
-import sys
+import copy
 
-sys.setrecursionlimit(3000)
+META = [[1,2,3],[4,5,6],[7,8,0]]
 
-class ordem: #classe que é usada para definir a prioridade na fila
-    def __init__(self, val, dire):
-        self.valor = val
-        self.direcao = dire
-    def saida(self):
-        print(self.valor, self.direcao)
-
-def imprimirTabela(atual):
-    for a in atual:
-        for b in a:
-            print("|", b, end=" ")
-        print("\n-------------")
-    print("\n\n\n")
-
-def checarciclo(atual): #checa se a tabela fecha um ciclo
-    """print('IMPRIMINDO CONTEUDO DE CICLO:')
-    for x in ciclo:
-        print(x)
-    print('FIM  IMPRIMINDO CONTEUDO DE CICLO')
-    print('testando ciclos')"""
-    for x in ciclo:
-        #print(str(atual) + "  = " + str(x))
-        if(atual == x):
-            #print('CICLO')
-            return True
-    #print('fim testando ciclos\n\n\n\n')
-    return False
-
-flag = False #Flag para descobrir se a meta foi alcancada
-ciclo=[] #Fila que guarda os estados da arvore para nao ocorrer ciclos
-meta = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] #Meta
-
-def manhattan(tabela, x, y, g):
-    imprimirTabela(tabela)
-    global flag
+class Noh:
+    def __init__(self, estado, pai, g, h):
+        self.estado = estado
+        self.pai = pai
+        self.g = g
+        self.h = h
     
-    if meta == tabela:
-        flag = True
-        return
+    def __eq__(self, outro):
+        return self.estado == outro.estado
 
-    if checarciclo(tabela) == True or flag == True:
-        return
-
-    moverDireita = [[0 for i in range(3)] for j in range(3)]
-    moverEsquerda= [[0 for i in range(3)] for j in range(3)]
-    moverCima= [[0 for i in range(3)] for j in range(3)]
-    moverBaixo = [[0 for i in range(3)] for j in range(3)]
-
-    for a in range(0,3):
-        for b in range(0,3):
-            moverEsquerda[a][b]=tabela[a][b]
-            moverDireita[a][b]=tabela[a][b]
-            moverCima[a][b]=tabela[a][b]
-            moverBaixo[a][b]=tabela[a][b]
-
-    ciclo.append(tabela.copy())
-    ordenacao = []
-
-
-    if x - 1 >= 0:
-        aux=moverCima[x][y]
-        moverCima[x][y]=moverCima[x-1][y]
-        moverCima[x-1][y]=aux
-        ordenacao.append(ordem(calcularHeuristicaManhattan(moverCima)+g, "cima"))
-    else:
-        del moverCima
-    if x + 1 <= 2:
-        ordenacao.append(ordem(calcularHeuristicaManhattan(moverBaixo)+g, "baixo"))
-        aux=moverBaixo[x][y]
-        moverBaixo[x][y]=moverBaixo[x+1][y]
-        moverBaixo[x+1][y]=aux
-    else:
-        del moverBaixo
-    if y - 1 >= 0:
-        aux=moverEsquerda[x][y]
-        moverEsquerda[x][y]=moverEsquerda[x][y-1]
-        moverEsquerda[x][y-1]=aux
-        ordenacao.append(ordem(calcularHeuristicaManhattan(moverEsquerda)+g, "esquerda"))
-    else:
-        del moverEsquerda
-    if y + 1 <= 2:
-        aux=moverDireita[x][y]
-        moverDireita[x][y]=moverDireita[x][y+1]
-        moverDireita[x][y+1]=aux
-        ordenacao.append(ordem(calcularHeuristicaManhattan(moverDireita)+g, "direita"))
-    else:
-        del moverDireita
-    ordenacao.sort(key =lambda x : x.valor)
-
-    for obj in ordenacao:
-        if obj.direcao == "cima":
-            manhattan(moverCima.copy(), x-1, y, obj.valor)
-        elif obj.direcao == "baixo":
-            manhattan(moverBaixo.copy(), x+1, y, obj.valor)
-        elif obj.direcao == "esquerda":
-            manhattan(moverEsquerda.copy(), x, y-1, obj.valor)
-        elif obj.direcao == "direita":
-            manhattan(moverDireita.copy(), x, y+1, obj.valor)
-        if flag == True:
-            return
-    ciclo.pop(len(ciclo)-1)
-
-def calcularHeuristicaManhattan(atual):
-    contador = 0
-    for x in range(0, 3):
-        for y in range(0,3):
-            for x1 in range(0,3):
-                for x2 in range(0,3):
-                    if(atual[x][y]==meta[x1][x2]):
-                        posY = x2
-                        posX = x1
-            posIdealX = abs(y - posY )
-            posIdealY = abs(x - posX)
-            contador = contador + posIdealX + posIdealY
-    return contador
-
-def profundidade(tabela, x, y, recursao):
-    print(recursao, x, y)
-    imprimirTabela(tabela)
-    global flag
+    def __repr__(self):
+        return str(self.estado)
     
-    if meta == tabela:
-        flag = True
-        return
+    def getState(self):
+        return self.estado
 
-    if checarciclo(tabela) == True or flag == True:
-        return
+def localizar(atual, elemento=0):
+    for i in range(3):
+        for j in range(3):
+            if atual[i][j] == elemento:
+                return i, j
 
-
-    ciclo.append(tabela.copy())
-    mover = [[0 for i in range(3)] for j in range(3)]
-
-    for a in range(0,3):
-        for b in range(0,3):
-            mover[a][b]=tabela[a][b]
-
-    if x - 1 >= 0:
-        aux=mover[x][y]
-        mover[x][y]=mover[x-1][y]
-        mover[x-1][y]=aux
-        profundidade(mover.copy(), x-1, y, recursao+1)
-
-    for a in range(0,3):
-        for b in range(0,3):
-            mover[a][b]=tabela[a][b]
-
-    if x + 1 <= 2:
-        aux=mover[x][y]
-        mover[x][y]=mover[x+1][y]
-        mover[x+1][y]=aux
-        profundidade(mover.copy(), x+1, y, recursao+1)
-
-    for a in range(0,3):
-        for b in range(0,3):
-            mover[a][b]=tabela[a][b]
-
-    if y - 1 >= 0:
-        aux=mover[x][y]
-        mover[x][y]=mover[x][y-1]
-        mover[x][y-1]=aux
-        profundidade(mover.copy(), x, y-1, recursao+1)
-
-    for a in range(0,3):
-        for b in range(0,3):
-            mover[a][b]=tabela[a][b]
-
-    if y + 1 <= 2:
-        aux=mover[x][y]
-        mover[x][y]=mover[x][y+1]
-        mover[x][y+1]=aux
-        profundidade(mover.copy(), x, y+1, recursao+1)
-    ciclo.pop(len(ciclo)-1)
-     
-def solucionavel(atual):
-    contador=0
-    for x in range(0, 3):
-        for y in range(0, 3):
-            if(tabela[x][y]!=9):
-                for z in range(x, 3):
-                    for a in range(y, 3):
-                        if(atual[x][y] > atual[z][a]):
-                            contador=contador+1
-    print('contador: ', contador)
-    if (contador % 2 == 1 ):
+def solucionavel(lista):
+    inversoes=0
+    for i,e in enumerate(lista):
+        if e == 0:
+            continue
+        for j in range(i+1, len(lista)):
+            if lista[j]==0:
+                continue
+            if e > lista[j]:
+                inversoes+=1
+    if (inversoes % 2 == 1 ):
         return False
     else:
         return True
 
-tabela = [[0 for i in range(3)] for j in range(3)]
-aleatorio = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-for x in range(0, 3):
-    for y in range(0, 3):
-        z = random.randrange(0, len(aleatorio))
-        tabela[x][y] = aleatorio[z]
-        aleatorio.pop(z)
+def geraInicial(st=META[:]):
+    lista = [j for i in st for j in i]
+    while True:
+        random.shuffle(lista)
+        st = [lista[:3]] + [lista[3:6]]+[lista[6:]]
+        if solucionavel(lista) and st!= META: return st
+    return 0
 
-for x in range(0, 3):
-    for y in range(0, 3):
-        if(tabela[x][y] == 9):
-            p1=x
-            p2=y
+def distanciaQuarteirao(st1, st2):
+    dist = 0
+    fora = 0
+    for i in range(3):
+        for j in range(3):
+            if st1[i][j]==0: continue
+            i2,j2 = localizar(st2, st1[i][j])
+            if i2 != i or j2 != j : fora+1
+            dist += abs(i2-i)+abs(j2-j)
+    return dist+fora
 
-#tabela = [[1,2,3],[4,5,6],[7,9,8]]
-if(solucionavel(tabela)):#verificar paridade
-    #manhattan(tabela.copy(), 2, 1,0)
-    manhattan(tabela.copy(), p1, p2,0)
-    #profundidade(tabela.copy(), 2, 1, 0)
-else:
-    print('TABELA IMPOSSIVEL!') 
+def criarNo(estado, pai, g=0):
+    h = g + distanciaQuarteirao(estado, META)
+    return Noh(estado, pai, g, h)
+
+def inserirNoh(noh, fronteira):
+    if noh in fronteira:
+        return fronteira
+    fronteira.append(noh)
+    chave=fronteira[-1]
+    j=len(fronteira)-2
+    while fronteira[j].h > chave.h and j >=0:
+        fronteira[j+1] = fronteira[j]
+        fronteira [j] = chave
+        j -= 1
+    return fronteira
+
+def moverAcima(atual):
+    linha, coluna = localizar(atual,0)
+    if linha > 0:
+        atual[linha-1][coluna], atual[linha][coluna] = atual[linha][coluna], atual[linha-1][coluna]
+    return atual
+
+def moverAbaixo(atual):
+    linha, coluna = localizar(atual,0)
+    if linha < 2:
+        atual[linha+1][coluna], atual[linha][coluna] = atual[linha][coluna], atual[linha+1][coluna]
+    return atual
+
+def moverEsquerda(atual):
+    linha, coluna = localizar(atual,0)
+    if coluna > 0:
+        atual[linha][coluna-1], atual[linha][coluna] = atual[linha][coluna], atual[linha][coluna-1]
+    return atual
+
+def moverDireita(atual):
+    linha, coluna = localizar(atual, 0)
+    if coluna < 2:
+        atual[linha][coluna+1], atual[linha][coluna] = atual[linha][coluna], atual[linha][coluna+1]
+    return atual
+
+def succ(noh):
+    estado = noh.estado
+    pai = noh.pai
+    if pai:
+        estadoPai = pai.estado
+    else:
+        estadoPai = None
+    listaS = []
+    l1 = moverAcima(copy.deepcopy(estado))
+    if l1 != estado:
+        listaS.append(l1)
+    
+    l2 = moverAbaixo(copy.deepcopy(estado))
+    if l2 != estado:
+        listaS.append(l2)
+
+    l3 = moverDireita(copy.deepcopy(estado))
+    if l3 != estado:
+        listaS.append(l3)
+
+    l4 = moverEsquerda(copy.deepcopy(estado))
+    if l4 != estado:
+        listaS.append(l4)
+    return listaS
+
+def busca(max, nohInicio):
+    nmov = 0
+    borda = [nohInicio]
+    while borda:
+        noh = borda.pop(0)
+        if noh.estado == META:
+            sol = []
+            while True:
+                sol.append(noh.estado)
+                noh = noh.pai
+                if not noh: break
+            sol.reverse()
+            return sol, nmov
+        nmov+=1
+        if nmov > max: break
+        sucs = succ(noh)
+        for s in sucs:
+            inserirNoh(criarNo(s, noh, noh.g+1), borda)
+    return 0, nmov
+
+def Puzzle(maxD, nAmostra):
+    noInicial = criarNo(geraInicial(), None)
+    #noInicial = criarNo([[6, 7, 4], [1, 2, 8], [0, 5, 3]], None)
+    res, nmov = busca(maxD, noInicial)
+    resultado = {"PassosProfundidade":[], "TotalProfundidade":0,"PassosLargura":[], "TotalLargura":0,}
+    if res!= 0:
+        for x in res:
+            resultado['PassosProfundidade'].append(x)
+    resultado['TotalProfundidade']=(nmov)
+    
+    res, nmov = buscaProf(maxD, noInicial)
+    if res!= 0:
+        for x in res:
+            resultado['PassosLargura'].append(x)
+    resultado['TotalLargura']=(nmov)
+    print(json.dumps(resultado))
+
+#PROFUNDIDADE
+
+def buscaProf(max, nohInicio):
+    nmov = 0
+    borda = [nohInicio]
+    fechado = []
+    while borda:
+        noh = borda.pop(0)
+        if noh.estado == META:
+            sol = []
+            while True:
+                sol.append(noh.estado)
+                noh = noh.pai
+                if not noh: break
+            sol.reverse()
+            return sol, nmov
+        nmov+=1
+        if nmov > max: break
+        sucs = succ(noh)
+        sucs.sort(key=lambda x : distanciaQuarteirao(x, META), reverse=True)
+        for s in sucs:
+            if s not in fechado:
+                inserirNohProf(criarNo(s, noh, noh.g+1), borda)
+            fechado.append(s)
+    return 0, nmov
+
+def inserirNohProf(noh, fronteira):
+    if noh in fronteira:
+        return fronteira
+    fronteira.insert(0,noh)
+    return fronteira
+
+Puzzle(15000, 0)

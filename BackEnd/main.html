@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A*</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div id="container">
+        <div>
+            <p>ORIGINAL</p>
+            <table class="table table-bordered border-primary">
+                <tbody>
+                    <tr>
+                        <td id="childInicial1">-</td>
+                        <td id="childInicial2">-</td>
+                        <td id="childInicial3">-</td>
+                    </tr>
+                    <tr>
+                        <td id="childInicial4">-</td>
+                        <td id="childInicial5">-</td>
+                        <td id="childInicial6">-</td>
+                    </tr>
+                    <tr>
+                        <td id="childInicial7">-</td>
+                        <td id="childInicial8">-</td>
+                        <td id="childInicial9">-</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div>
+            <p>A* - QUANDIDADE:<span id="quantidadeProf"> 0 </span></p>
+            <p><span id="totalProf"> - </span> possibilidades calculadas</p>
+            <table class="table table-bordered border-primary">
+                <tbody>
+                    <tr>
+                        <td id="childProf1">-</td>
+                        <td id="childProf2">-</td>
+                        <td id="childProf3">-</td>
+                    </tr>
+                    <tr>
+                        <td id="childProf4">-</td>
+                        <td id="childProf5">-</td>
+                        <td id="childProf6">-</td>
+                    </tr>
+                    <tr>
+                        <td id="childProf7">-</td>
+                        <td id="childProf8">-</td>
+                        <td id="childProf9">-</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div>
+            <p>PRONFIDADE - QUANDIDADE:<span id="quantidadeLarg"> 0 </span></p>
+            <p><span id="totalLarg"> - </span> possibilidades calculadas</p>
+            <table class="table table-bordered border-primary">
+                <tbody>
+                    <tr>
+                        <td id="childLarg1">-</td>
+                        <td id="childLarg2">-</td>
+                        <td id="childLarg3">-</td>
+                    </tr>
+                    <tr>
+                        <td id="childLarg4">-</td>
+                        <td id="childLarg5">-</td>
+                        <td id="childLarg6">-</td>
+                    </tr>
+                    <tr>
+                        <td id="childLarg7">-</td>
+                        <td id="childLarg8">-</td>
+                        <td id="childLarg9">-</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <button style="position: absolute;left: 47%;" type="button" onclick="resolver()" class="btn btn-dark">RESTART</button>
+<style>
+    .table.table-bordered.border-primary{
+        font-size: 50px;
+        max-width: 80%;
+        text-align: center;
+    }
+    #container{
+        display: grid;
+        align-items: center;
+        margin: 3%;
+        gap: 50px 100px;
+        grid-template-columns: auto auto auto;
+        padding: 10px;
+    }
+    </style>
+    <script>
+        var movimentosProf=[]
+        var resultado
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                // Typical action to be performed when the document is ready:
+                console.log(this.responseText)
+                resultado = JSON.parse(this.responseText)
+                inicial()
+                resolver()
+            }
+        };
+        xhttp.open("GET", "algoritmo", true);
+        xhttp.send();
+
+        function inicial(){
+            let indiceInicial=0
+            movimentosProf = resultado.PassosProfundidade
+            movimentoLarg = resultado.PassosLargura
+            for(i=0;i < 3;i++){
+                for(j=0;j < 3;j++){
+                    indiceInicial=i*3+j+1
+                    indiceInicial=indiceInicial.toString()
+                    if(document.getElementById('childInicial' + indiceInicial).innerHTML==0){
+                        document.getElementById('childInicial' + indiceInicial).style.backgroundColor= "#FFFFFF"
+                    }
+                    document.getElementById('childInicial' + indiceInicial).innerHTML=movimentosProf[0][i][j]
+                    if(movimentosProf[0][i][j]==0){
+                        document.getElementById('childInicial' + indiceInicial).style.backgroundColor= "#555555"
+                    }
+                }
+            }
+        }
+
+        function resolver(){
+            contadorProf=0
+            contadorLarg=0
+            indiceProf=0
+            indiceLarg=0
+
+            document.getElementById('totalProf').innerHTML=" " + resultado.TotalProfundidade
+            document.getElementById('totalLarg').innerHTML=" " + resultado.TotalLargura
+
+            var intervalProf = setInterval(()=>{
+                if(contadorProf >= movimentosProf.length){
+                    clearInterval(intervalProf)
+                    return
+                }
+                for(i=0;i < 3;i++){
+                    for(j=0;j < 3;j++){
+                        indiceProf=i*3+j+1
+                        indiceProf=indiceProf.toString()
+                        if(document.getElementById('childProf' + indiceProf).innerHTML==0){
+                            document.getElementById('childProf' + indiceProf).style.backgroundColor= "#FFFFFF"
+                        }
+                        document.getElementById('childProf' + indiceProf).innerHTML=movimentosProf[contadorProf][i][j]
+                        if(movimentosProf[contadorProf][i][j]==0){
+                            document.getElementById('childProf' + indiceProf).style.backgroundColor= "#555555"
+                        }
+                    }
+                }
+                contadorProf+=1
+                document.getElementById('quantidadeProf').innerHTML=" " + contadorProf
+            }, 700)
+
+            var interval2 = setInterval(()=>{
+                if(contadorLarg >= movimentoLarg.length){
+                    clearInterval(interval2)
+                    return
+                }
+                for(i=0;i < 3;i++){
+                    for(j=0;j < 3;j++){
+                        indiceLarg=i*3+j+1
+                        indiceLarg=indiceLarg.toString()
+                        if(document.getElementById('childLarg' + indiceLarg).innerHTML==0){
+                            document.getElementById('childLarg' + indiceLarg).style.backgroundColor= "#FFFFFF"
+                        }
+                        document.getElementById('childLarg' + indiceLarg).innerHTML=movimentoLarg[contadorLarg][i][j]
+                        if(movimentoLarg[contadorLarg][i][j]==0){
+                            document.getElementById('childLarg' + indiceLarg).style.backgroundColor= "#555555"
+                        }
+                    }
+                }
+                contadorLarg+=1
+                document.getElementById('quantidadeLarg').innerHTML=" " + contadorLarg
+            }, 100)
+        }
+
+    </script>
+</body>
+</html>
