@@ -123,10 +123,12 @@
                     indiceInicial=indiceInicial.toString()
                     if(document.getElementById('childInicial' + indiceInicial).innerHTML==0){
                         document.getElementById('childInicial' + indiceInicial).style.backgroundColor= "#FFFFFF"
+                        document.getElementById('childInicial' + indiceInicial).style.color= "#555555"
                     }
                     document.getElementById('childInicial' + indiceInicial).innerHTML=movimentosProf[0][i][j]
                     if(movimentosProf[0][i][j]==0){
                         document.getElementById('childInicial' + indiceInicial).style.backgroundColor= "#555555"
+                        document.getElementById('childInicial' + indiceInicial).style.color= "#555555"
                     }
                 }
             }
@@ -152,10 +154,12 @@
                         indiceProf=indiceProf.toString()
                         if(document.getElementById('childProf' + indiceProf).innerHTML==0){
                             document.getElementById('childProf' + indiceProf).style.backgroundColor= "#FFFFFF"
+                            document.getElementById('childProf' + indiceProf).style.color= "#555555"
                         }
                         document.getElementById('childProf' + indiceProf).innerHTML=movimentosProf[contadorProf][i][j]
                         if(movimentosProf[contadorProf][i][j]==0){
                             document.getElementById('childProf' + indiceProf).style.backgroundColor= "#555555"
+                            document.getElementById('childProf' + indiceProf).style.color= "#555555"
                         }
                     }
                 }
@@ -174,10 +178,12 @@
                         indiceLarg=indiceLarg.toString()
                         if(document.getElementById('childLarg' + indiceLarg).innerHTML==0){
                             document.getElementById('childLarg' + indiceLarg).style.backgroundColor= "#FFFFFF"
+                            document.getElementById('childLarg' + indiceLarg).style.color= "#555555"
                         }
                         document.getElementById('childLarg' + indiceLarg).innerHTML=movimentoLarg[contadorLarg][i][j]
                         if(movimentoLarg[contadorLarg][i][j]==0){
                             document.getElementById('childLarg' + indiceLarg).style.backgroundColor= "#555555"
+                            document.getElementById('childLarg' + indiceLarg).style.color= "#555555"
                         }
                     }
                 }

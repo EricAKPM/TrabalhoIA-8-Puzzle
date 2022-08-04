@@ -105,10 +105,6 @@ def moverDireita(atual):
 def succ(noh):
     estado = noh.estado
     pai = noh.pai
-    if pai:
-        estadoPai = pai.estado
-    else:
-        estadoPai = None
     listaS = []
     l1 = moverAcima(copy.deepcopy(estado))
     if l1 != estado:
