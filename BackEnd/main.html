@@ -34,8 +34,8 @@
         </div>
         
         <div>
-            <p>A* - QUANDIDADE:<span id="quantidadeProf"> 0 </span></p>
-            <p><span id="totalProf"> - </span> possibilidades calculadas</p>
+            <p>A*- Movements:<span id="quantidadeProf"> 0 </span></p>
+            <p><span id="totalProf"> - </span> calculated possibilities</p>
             <table class="table table-bordered border-primary">
                 <tbody>
                     <tr>
@@ -58,8 +58,8 @@
         </div>
         
         <div>
-            <p>PRONFIDADE - QUANDIDADE:<span id="quantidadeLarg"> 0 </span></p>
-            <p><span id="totalLarg"> - </span> possibilidades calculadas</p>
+            <p>DFS- Movements:<span id="quantidadeLarg"> 0 </span></p>
+            <p><span id="totalLarg"> - </span> calculated possibilities</p>
             <table class="table table-bordered border-primary">
                 <tbody>
                     <tr>
@@ -82,24 +82,28 @@
         </div>
     </div>
     <button style="position: absolute;left: 47%;" type="button" onclick="resolver()" class="btn btn-dark">RESTART</button>
-<style>
-    .table.table-bordered.border-primary{
-        font-size: 50px;
-        max-width: 80%;
-        text-align: center;
-    }
-    #container{
-        display: grid;
-        align-items: center;
-        margin: 3%;
-        gap: 50px 100px;
-        grid-template-columns: auto auto auto;
-        padding: 10px;
-    }
+    
+    <style>
+        .table.table-bordered.border-primary{
+            font-size: 50px;
+            max-width: 80%;
+            text-align: center;
+        }
+        #container{
+            display: grid;
+            align-items: center;
+            margin: 3%;
+            gap: 50px 100px;
+            grid-template-columns: auto auto auto;
+            padding: 10px;
+        }
     </style>
+
     <script>
         var movimentosProf=[]
         var resultado
+
+        //AJAX
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
@@ -110,9 +114,10 @@
                 resolver()
             }
         };
-        xhttp.open("GET", "algoritmo", true);
+        xhttp.open("GET", "Algorithm", true);
         xhttp.send();
 
+        //Original Table
         function inicial(){
             let indiceInicial=0
             movimentosProf = resultado.PassosProfundidade
@@ -134,6 +139,7 @@
             }
         }
 
+        //DFS and A*
         function resolver(){
             contadorProf=0
             contadorLarg=0
@@ -143,6 +149,7 @@
             document.getElementById('totalProf').innerHTML=" " + resultado.TotalProfundidade
             document.getElementById('totalLarg').innerHTML=" " + resultado.TotalLargura
 
+            //DFS
             var intervalProf = setInterval(()=>{
                 if(contadorProf >= movimentosProf.length){
                     clearInterval(intervalProf)
@@ -165,8 +172,9 @@
                 }
                 contadorProf+=1
                 document.getElementById('quantidadeProf').innerHTML=" " + contadorProf
-            }, 700)
+            }, 700)//SPEED:700ms
 
+            //A*
             var interval2 = setInterval(()=>{
                 if(contadorLarg >= movimentoLarg.length){
                     clearInterval(interval2)
@@ -189,7 +197,7 @@
                 }
                 contadorLarg+=1
                 document.getElementById('quantidadeLarg').innerHTML=" " + contadorLarg
-            }, 100)
+            }, 100)//SPEED:100ms
         }
 
     </script>
