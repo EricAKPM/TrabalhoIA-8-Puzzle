@@ -1,9 +1,14 @@
-from operator import le
-from threading import local
+"""
+    A* and DFS
+"""
+
 import json
 import random
 import copy
 
+"""
+    Goal
+"""
 META = [[1,2,3],[4,5,6],[7,8,0]]
 
 class Noh:
@@ -22,12 +27,18 @@ class Noh:
     def getState(self):
         return self.estado
 
+""" 
+    locate an element in 2d array
+"""
 def localizar(atual, elemento=0):
     for i in range(3):
         for j in range(3):
             if atual[i][j] == elemento:
                 return i, j
 
+""" 
+    check if it is fixable
+"""
 def solucionavel(lista):
     inversoes=0
     for i,e in enumerate(lista):
@@ -43,6 +54,9 @@ def solucionavel(lista):
     else:
         return True
 
+""" 
+    generate a fixable 2d array
+"""
 def geraInicial(st=META[:]):
     lista = [j for i in st for j in i]
     while True:
@@ -51,6 +65,9 @@ def geraInicial(st=META[:]):
         if solucionavel(lista) and st!= META: return st
     return 0
 
+""" 
+    Manhattan heuristic
+"""
 def distanciaQuarteirao(st1, st2):
     dist = 0
     fora = 0
@@ -62,10 +79,16 @@ def distanciaQuarteirao(st1, st2):
             dist += abs(i2-i)+abs(j2-j)
     return dist+fora
 
+""" 
+    create a node
+"""
 def criarNo(estado, pai, g=0):
     h = g + distanciaQuarteirao(estado, META)
     return Noh(estado, pai, g, h)
 
+""" 
+    create a node
+"""
 def inserirNoh(noh, fronteira):
     if noh in fronteira:
         return fronteira
@@ -78,33 +101,47 @@ def inserirNoh(noh, fronteira):
         j -= 1
     return fronteira
 
+""" 
+    check if is possible move void space to up
+"""
 def moverAcima(atual):
     linha, coluna = localizar(atual,0)
     if linha > 0:
         atual[linha-1][coluna], atual[linha][coluna] = atual[linha][coluna], atual[linha-1][coluna]
     return atual
 
+""" 
+    check if is possible move void space to down
+"""
 def moverAbaixo(atual):
     linha, coluna = localizar(atual,0)
     if linha < 2:
         atual[linha+1][coluna], atual[linha][coluna] = atual[linha][coluna], atual[linha+1][coluna]
     return atual
 
+""" 
+    check if is possible move void space to left
+"""
 def moverEsquerda(atual):
     linha, coluna = localizar(atual,0)
     if coluna > 0:
         atual[linha][coluna-1], atual[linha][coluna] = atual[linha][coluna], atual[linha][coluna-1]
     return atual
 
+""" 
+    check if is possible move void space to right
+"""
 def moverDireita(atual):
     linha, coluna = localizar(atual, 0)
     if coluna < 2:
         atual[linha][coluna+1], atual[linha][coluna] = atual[linha][coluna], atual[linha][coluna+1]
     return atual
 
+""" 
+    define child of that node
+"""
 def succ(noh):
     estado = noh.estado
-    pai = noh.pai
     listaS = []
     l1 = moverAcima(copy.deepcopy(estado))
     if l1 != estado:
@@ -123,6 +160,9 @@ def succ(noh):
         listaS.append(l4)
     return listaS
 
+""" 
+    A*
+"""
 def busca(max, nohInicio):
     nmov = 0
     borda = [nohInicio]
@@ -143,9 +183,11 @@ def busca(max, nohInicio):
             inserirNoh(criarNo(s, noh, noh.g+1), borda)
     return 0, nmov
 
+""" 
+    main function
+"""
 def Puzzle(maxD, nAmostra):
     noInicial = criarNo(geraInicial(), None)
-    #noInicial = criarNo([[6, 7, 4], [1, 2, 8], [0, 5, 3]], None)
     res, nmov = busca(maxD, noInicial)
     resultado = {"PassosProfundidade":[], "TotalProfundidade":0,"PassosLargura":[], "TotalLargura":0,}
     if res!= 0:
@@ -160,8 +202,7 @@ def Puzzle(maxD, nAmostra):
     resultado['TotalLargura']=(nmov)
     print(json.dumps(resultado))
 
-#PROFUNDIDADE
-
+#DFS
 def buscaProf(max, nohInicio):
     nmov = 0
     borda = [nohInicio]
@@ -186,6 +227,9 @@ def buscaProf(max, nohInicio):
             fechado.append(s)
     return 0, nmov
 
+""" 
+    insert node
+"""
 def inserirNohProf(noh, fronteira):
     if noh in fronteira:
         return fronteira

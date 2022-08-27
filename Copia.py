@@ -1,5 +1,5 @@
 """
-    ARQUIVO COM SOMENTE RESOLUCAO A*
+    Only A*
 """
 
 import random
